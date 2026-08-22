@@ -1724,7 +1724,7 @@ html[data-theme-token-probe] *::after {
   border-radius: 0.4rem;
   background: var(--popover);
   box-shadow: 0 4px 16px rgb(0 0 0 / 24%);
-  color: var(--popover-foreground);
+  color: var(--contrast-popover-foreground);
   font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1rem;
@@ -1823,7 +1823,7 @@ html[data-theme-id="t3-chat"] {
     }
 
     & .chat-markdown :not(pre) > code {
-      color: var(--message-foreground);
+      color: var(--contrast-message-foreground);
     }
   }
 }
