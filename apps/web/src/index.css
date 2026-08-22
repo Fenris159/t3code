@@ -80,6 +80,7 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   --app-scrollbar-width: 6px;
   --appearance-contrast-base: 100%;
   --appearance-contrast-boost: 0%;
+  --appearance-contrast-border-boost: 0%;
   --appearance-contrast-target: black;
   --app-scrollbar-thumb: rgb(217 217 217);
   --app-scrollbar-thumb-hover: rgb(191 191 191);
@@ -161,17 +162,21 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
   --color-input: color-mix(
-    in oklab,
-    color-mix(in oklab, var(--input) var(--appearance-contrast-base), var(--background)),
-    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+    in srgb,
+    color-mix(in srgb, var(--input) var(--appearance-contrast-base), transparent),
+    var(--foreground) var(--appearance-contrast-border-boost)
   );
   --color-border: color-mix(
-    in oklab,
-    color-mix(in oklab, var(--border) var(--appearance-contrast-base), var(--background)),
-    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+    in srgb,
+    color-mix(in srgb, var(--border) var(--appearance-contrast-base), transparent),
+    var(--foreground) var(--appearance-contrast-border-boost)
   );
   --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-foreground: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--accent-foreground) var(--appearance-contrast-base), var(--accent)),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
   --color-accent: var(--accent);
   --color-muted-foreground: color-mix(
     in oklab,
@@ -194,13 +199,29 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
     color-mix(in oklab, var(--icon-muted) var(--appearance-contrast-base), var(--background)),
     var(--appearance-contrast-target) var(--appearance-contrast-boost)
   );
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-foreground: color-mix(
+    in oklab,
+    color-mix(
+      in oklab,
+      var(--secondary-foreground) var(--appearance-contrast-base),
+      var(--secondary)
+    ),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
+  --color-popover-foreground: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--popover-foreground) var(--appearance-contrast-base), var(--popover)),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
   --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+  --color-card-foreground: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--card-foreground) var(--appearance-contrast-base), var(--card)),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
   --color-card: var(--card);
   --color-foreground: color-mix(
     in oklab,
@@ -210,7 +231,15 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   --color-background: var(--background);
   --color-surface-raised: var(--surface-raised);
   --color-message: var(--message-surface);
-  --color-message-foreground: var(--message-foreground);
+  --color-message-foreground: color-mix(
+    in oklab,
+    color-mix(
+      in oklab,
+      var(--message-foreground) var(--appearance-contrast-base),
+      var(--message-surface)
+    ),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
   --color-message-action: var(--message-action);
   --color-message-action-foreground: var(--message-action-foreground);
   --color-message-action-hover: var(--message-action-hover);
@@ -234,9 +263,9 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   --color-sidebar-row-active: var(--sidebar-row-active);
   --color-sidebar-row-selected: var(--sidebar-row-selected);
   --color-sidebar-border: color-mix(
-    in oklab,
-    color-mix(in oklab, var(--sidebar-border) var(--appearance-contrast-base), var(--sidebar)),
-    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+    in srgb,
+    color-mix(in srgb, var(--sidebar-border) var(--appearance-contrast-base), transparent),
+    var(--sidebar-foreground) var(--appearance-contrast-border-boost)
   );
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
