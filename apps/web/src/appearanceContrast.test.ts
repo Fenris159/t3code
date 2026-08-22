@@ -2,20 +2,44 @@ import { describe, expect, it, vi } from "vite-plus/test";
 
 import { applyAppearanceContrast } from "./appearanceContrast";
 
+function makeRoot() {
+  const setProperty = vi.fn();
+  const toggleAttribute = vi.fn();
+  return {
+    root: { style: { setProperty }, toggleAttribute } as unknown as HTMLElement,
+    setProperty,
+    toggleAttribute,
+  };
+}
+
 describe("applyAppearanceContrast", () => {
-  it("applies a non-default contrast filter", () => {
-    const setProperty = vi.fn();
+  it("boosts semantic contrast above the default", () => {
+    const { root, setProperty, toggleAttribute } = makeRoot();
 
-    applyAppearanceContrast({ style: { setProperty } } as unknown as HTMLElement, 135);
+    applyAppearanceContrast(root, 135);
 
-    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-filter", "contrast(135%)");
+    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-base", "100%");
+    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-boost", "35%");
+    expect(toggleAttribute).toHaveBeenCalledWith("data-appearance-contrast", true);
   });
 
-  it("disables the filter at the default contrast", () => {
-    const setProperty = vi.fn();
+  it("softens semantic contrast below the default", () => {
+    const { root, setProperty, toggleAttribute } = makeRoot();
 
-    applyAppearanceContrast({ style: { setProperty } } as unknown as HTMLElement, 100);
+    applyAppearanceContrast(root, 70);
 
-    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-filter", "none");
+    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-base", "70%");
+    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-boost", "0%");
+    expect(toggleAttribute).toHaveBeenCalledWith("data-appearance-contrast", true);
+  });
+
+  it("disables contrast mixing at the default", () => {
+    const { root, setProperty, toggleAttribute } = makeRoot();
+
+    applyAppearanceContrast(root, 100);
+
+    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-base", "100%");
+    expect(setProperty).toHaveBeenCalledWith("--appearance-contrast-boost", "0%");
+    expect(toggleAttribute).toHaveBeenCalledWith("data-appearance-contrast", false);
   });
 });

@@ -1,8 +1,7 @@
 import type { AppearanceContrast } from "@t3tools/contracts/settings";
 
 export function applyAppearanceContrast(root: HTMLElement, contrast: AppearanceContrast): void {
-  root.style.setProperty(
-    "--appearance-contrast-filter",
-    contrast === 100 ? "none" : `contrast(${contrast}%)`,
-  );
+  root.style.setProperty("--appearance-contrast-base", `${Math.min(contrast, 100)}%`);
+  root.style.setProperty("--appearance-contrast-boost", `${Math.max(contrast - 100, 0)}%`);
+  root.toggleAttribute("data-appearance-contrast", contrast !== 100);
 }
