@@ -1391,10 +1391,10 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   --background: var(--color-zinc-25);
   --app-chrome-background: var(--background);
   --toolbar-background: var(--app-chrome-background);
-  --toolbar-foreground: var(--contrast-foreground);
-  --toolbar-border: var(--contrast-border);
+  --toolbar-foreground: var(--foreground);
+  --toolbar-border: var(--border);
   --toolbar-control: var(--popover);
-  --toolbar-control-foreground: var(--contrast-foreground);
+  --toolbar-control-foreground: var(--foreground);
   --toolbar-control-hover: var(--accent);
   --surface-raised: color-mix(in srgb, var(--card) 20%, transparent);
   --foreground: var(--color-zinc-800);
@@ -1745,16 +1745,16 @@ html[data-theme-token-probe] *::after {
    dark-mode whites while preserving the same theme file across clients. */
 html[data-theme-id] [data-chat-header] {
   background-color: var(--toolbar-background);
-  color: var(--toolbar-foreground);
+  color: var(--contrast-toolbar-foreground);
 }
 
 html[data-theme-id] [data-chat-header] [data-slot="button"],
 html[data-theme-id] [data-chat-header] [data-slot="menu-trigger"],
 html[data-theme-id] [data-chat-header] [data-toolbar-control] {
-  --control-icon-color: var(--toolbar-control-foreground);
+  --control-icon-color: var(--contrast-toolbar-control-foreground);
   background-color: var(--toolbar-control);
-  border-color: var(--toolbar-border);
-  color: var(--toolbar-control-foreground);
+  border-color: var(--contrast-toolbar-border);
+  color: var(--contrast-toolbar-control-foreground);
 }
 
 /* The panel layout toggles stay ghost: they render both inside the header and
@@ -1766,8 +1766,8 @@ html[data-theme-id] [data-panel-layout-controls] [data-slot="toggle"],
 html[data-theme-id] [data-panel-layout-controls] [data-slot="tooltip-trigger"],
 html[data-theme-id] [data-workspace-titlebar-controls] [data-slot="toggle"],
 html[data-theme-id] [data-workspace-titlebar-controls] [data-slot="tooltip-trigger"] {
-  --control-icon-color: var(--toolbar-foreground);
-  color: var(--toolbar-foreground);
+  --control-icon-color: var(--contrast-toolbar-foreground);
+  color: var(--contrast-toolbar-foreground);
 }
 
 html[data-theme-id] [data-chat-header] [data-slot="button"]:hover,
@@ -1780,7 +1780,7 @@ html[data-theme-id] [data-chat-header] [data-toolbar-control][data-pressed] {
 }
 
 html[data-theme-id] [data-chat-header] [data-slot="separator"] {
-  background-color: var(--toolbar-border);
+  background-color: var(--contrast-toolbar-border);
 }
 
 /* Chat code blocks join the other code surfaces on the code tokens. The
@@ -1873,6 +1873,29 @@ html[data-theme-id="t3-chat"] [data-app-sidebar] {
    the sidebar because it owns a local semantic palette. */
 :root,
 [data-app-sidebar] {
+  --contrast-toolbar-foreground: color-mix(
+    in oklab,
+    color-mix(
+      in oklab,
+      var(--toolbar-foreground) var(--appearance-contrast-base),
+      var(--toolbar-background)
+    ),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
+  --contrast-toolbar-border: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--toolbar-border) var(--appearance-contrast-base), transparent),
+    var(--toolbar-foreground) var(--appearance-contrast-border-boost)
+  );
+  --contrast-toolbar-control-foreground: color-mix(
+    in oklab,
+    color-mix(
+      in oklab,
+      var(--toolbar-control-foreground) var(--appearance-contrast-base),
+      var(--toolbar-control)
+    ),
+    var(--appearance-contrast-target) var(--appearance-contrast-boost)
+  );
   --contrast-input: color-mix(
     in srgb,
     color-mix(in srgb, var(--input) var(--appearance-contrast-base), transparent),
