@@ -345,18 +345,24 @@ jobs:
 
       - name: Write release notes
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_TAG: ${{ needs.prepare.outputs.upstream_tag }}
+          PATCHES: ${{ needs.prepare.outputs.patches }}
         run: |
-          cat > "$RUNNER_TEMP/custom-release-notes.md" <<'NOTES'
-          Personal Windows nightly built from `${{ env.UPSTREAM_REPOSITORY }}` tag `${{ needs.prepare.outputs.upstream_tag }}` (`${{ needs.prepare.outputs.upstream_sha }}`).
+          set -euo pipefail
 
-          Applied patch branches:
+          gh api "repos/${UPSTREAM_REPOSITORY}/releases/tags/${UPSTREAM_TAG}" \
+            --jq '.body' > "$RUNNER_TEMP/upstream-release-notes.md"
 
-          - `${{ needs.prepare.outputs.patches }}`
-
-          This build is unsigned. Windows may show a SmartScreen warning on first install. Its desktop updater is pinned to `${{ github.repository }}`, so future updates come from this fork instead of the upstream release feed.
-
-          The bundled desktop server is included. The exact custom version is not published as an npm `t3` package, so remote server self-update to this custom version is intentionally unavailable.
-          NOTES
+          {
+            echo '> [!IMPORTANT]'
+            echo '> **Fenris custom patched build**'
+            printf '> Official T3 Code `%s` with personal patch branches `%s` applied. This unsigned build updates from `%s`.\n' \
+              "$UPSTREAM_TAG" "$PATCHES" "$GITHUB_REPOSITORY"
+            echo
+            cat "$RUNNER_TEMP/upstream-release-notes.md"
+          } > "$RUNNER_TEMP/custom-release-notes.md"
 
       - name: Publish GitHub prerelease
         uses: softprops/action-gh-release@v3
