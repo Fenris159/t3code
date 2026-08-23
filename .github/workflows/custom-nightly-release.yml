@@ -1,10 +1,11 @@
 name: Custom Windows nightly
+run-name: Sync upstream and build custom nightly
 
 on:
   schedule:
-    # Official nightlies start every three hours. Poll after their release job
-    # has had time to publish, and pick up a delayed build on the next run.
-    - cron: "45 */3 * * *"
+    # Forks do not receive workflow events from upstream pushes. Poll hourly to
+    # sync main and pick up a newly published upstream nightly release.
+    - cron: "45 * * * *"
   workflow_dispatch:
     inputs:
       upstream_tag:
@@ -33,8 +34,65 @@ env:
     custom/fenris-updater-branding
 
 jobs:
+  sync_upstream_main:
+    name: Sync fork main from upstream
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Clone fork
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          gh repo clone "$GITHUB_REPOSITORY" "$RUNNER_TEMP/sync-source" -- \
+            --filter=blob:none \
+            --no-checkout
+
+      - name: Merge upstream main
+        shell: bash
+        working-directory: ${{ runner.temp }}/sync-source
+        run: |
+          set -euo pipefail
+
+          upstream_url="https://github.com/${UPSTREAM_REPOSITORY}.git"
+          if git remote get-url upstream >/dev/null 2>&1; then
+            git remote set-url upstream "$upstream_url"
+          else
+            git remote add upstream "$upstream_url"
+          fi
+
+          git fetch --force --no-tags origin \
+            "refs/heads/main:refs/remotes/origin/main"
+          git fetch --force --no-tags upstream \
+            "refs/heads/main:refs/remotes/upstream/main"
+
+          origin_sha="$(git rev-parse refs/remotes/origin/main)"
+          upstream_sha="$(git rev-parse refs/remotes/upstream/main)"
+          git switch --force-create main "$origin_sha"
+
+          if git merge-base --is-ancestor "$upstream_sha" "$origin_sha"; then
+            echo "Fork main already contains upstream ${upstream_sha}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --no-ff --no-edit refs/remotes/upstream/main
+          git push origin HEAD:refs/heads/main
+
+          {
+            echo "### Upstream main synchronized"
+            echo
+            echo "- Previous fork main: \`${origin_sha}\`"
+            echo "- Upstream main: \`${upstream_sha}\`"
+            echo "- Synchronized fork main: \`$(git rev-parse HEAD)\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   prepare:
     name: Prepare patched source
+    needs: sync_upstream_main
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
