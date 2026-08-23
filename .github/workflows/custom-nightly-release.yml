@@ -30,6 +30,7 @@ env:
   # Apply patch branches in this order. Add future personal patches here.
   PATCH_BRANCHES: |
     fix/grok-skill-catalog
+    custom/fenris-updater-branding
 
 jobs:
   prepare:
@@ -348,21 +349,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           UPSTREAM_TAG: ${{ needs.prepare.outputs.upstream_tag }}
-          PATCHES: ${{ needs.prepare.outputs.patches }}
         run: |
           set -euo pipefail
 
           gh api "repos/${UPSTREAM_REPOSITORY}/releases/tags/${UPSTREAM_TAG}" \
-            --jq '.body' > "$RUNNER_TEMP/upstream-release-notes.md"
-
-          {
-            echo '> [!IMPORTANT]'
-            echo '> **Fenris custom patched build**'
-            printf '> Official T3 Code `%s` with personal patch branches `%s` applied. This unsigned build updates from `%s`.\n' \
-              "$UPSTREAM_TAG" "$PATCHES" "$GITHUB_REPOSITORY"
-            echo
-            cat "$RUNNER_TEMP/upstream-release-notes.md"
-          } > "$RUNNER_TEMP/custom-release-notes.md"
+            --jq '.body' > "$RUNNER_TEMP/custom-release-notes.md"
 
       - name: Publish GitHub prerelease
         uses: softprops/action-gh-release@v3
