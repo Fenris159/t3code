@@ -195,11 +195,12 @@ jobs:
             args:
               - --filter=t3...
 
-      - name: Test Grok skill discovery patch
+      - name: Test maintained patches
         run: >-
           vp test run
           apps/server/src/provider/Drivers/GrokSkills.test.ts
           apps/server/src/provider/Layers/GrokProvider.test.ts
+          apps/web/src/components/sidebar/SidebarUpdatePill.test.tsx
 
       - name: Build node-pty linux-x64 prebuild
         shell: bash
