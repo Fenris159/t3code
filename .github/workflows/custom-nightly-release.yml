@@ -49,6 +49,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          sparse-checkout: |
+            /*
+            !/.repos/
+          sparse-checkout-cone-mode: false
 
       - id: prepare
         name: Resolve upstream nightly and apply patches
