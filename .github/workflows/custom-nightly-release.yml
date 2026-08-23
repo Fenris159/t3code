@@ -45,26 +45,27 @@ jobs:
       custom_sha: ${{ steps.prepare.outputs.custom_sha }}
       patches: ${{ steps.prepare.outputs.patches }}
     steps:
-      - name: Checkout automation branch
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-          sparse-checkout: |
-            /*
-            !/.repos/
-          sparse-checkout-cone-mode: false
+      - name: Clone automation repository
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          gh repo clone "$GITHUB_REPOSITORY" "$RUNNER_TEMP/custom-source" -- \
+            --filter=blob:none \
+            --no-checkout
 
       - id: prepare
         name: Resolve upstream nightly and apply patches
         shell: bash
+        working-directory: ${{ runner.temp }}/custom-source
         env:
           GH_TOKEN: ${{ github.token }}
           REQUESTED_UPSTREAM_TAG: ${{ inputs.upstream_tag }}
           REQUESTED_REVISION: ${{ inputs.revision }}
         run: |
           set -euo pipefail
-          gh auth setup-git
 
           upstream_tag="${REQUESTED_UPSTREAM_TAG:-}"
           if [[ -z "$upstream_tag" ]]; then
