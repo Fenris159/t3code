@@ -114,7 +114,12 @@ jobs:
             exit 1
           fi
 
-          git remote add upstream "https://github.com/${UPSTREAM_REPOSITORY}.git"
+          upstream_url="https://github.com/${UPSTREAM_REPOSITORY}.git"
+          if git remote get-url upstream >/dev/null 2>&1; then
+            git remote set-url upstream "$upstream_url"
+          else
+            git remote add upstream "$upstream_url"
+          fi
           git fetch --force --no-tags upstream \
             "refs/tags/${upstream_tag}:refs/remotes/upstream/custom-nightly-source"
           upstream_sha="$(git rev-parse 'refs/remotes/upstream/custom-nightly-source^{commit}')"
