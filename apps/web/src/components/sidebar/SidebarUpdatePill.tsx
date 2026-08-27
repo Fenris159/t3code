@@ -64,7 +64,7 @@ function keyReleaseNoteItems(items: ReadonlyArray<string>) {
   });
 }
 
-function SidebarUpdateReleaseNotesTooltip({
+export function SidebarUpdateReleaseNotesTooltip({
   state,
   tooltip,
 }: {
@@ -81,7 +81,7 @@ function SidebarUpdateReleaseNotesTooltip({
         {state.status === "available" ? (
           <div>
             <div className="whitespace-nowrap text-sm leading-5 font-medium">
-              Update ready to download
+              Update ready to download - Fenris Custom Build
             </div>
             {state.availableVersion ? (
               <div className="mt-0.5 text-xs leading-4 text-update-foreground">
